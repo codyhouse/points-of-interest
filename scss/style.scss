@@ -1,0 +1,396 @@
+@import 'bourbon'; // http://bourbon.io/
+
+@import '../partials/variables'; // colors, fonts etc...
+
+@import '../partials/mixins'; // custom mixins
+
+@import '../partials/layout'; // responsive grid and media queries
+
+/* -------------------------------- 
+
+Primary style
+
+-------------------------------- */
+
+html * {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+*, *:after, *:before {
+	@include box-sizing(border-box);
+}
+
+body {
+	font: {
+		size: 100%;
+		family: $primary-font; // variables inside partials > _variables.scss
+	}
+	color: $color-1;
+	background-color: lighten($color-1, 5%);
+}
+
+a {
+	color: $color-4;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+}
+
+/* -------------------------------- 
+
+Modules - reusable parts of our design
+
+-------------------------------- */
+
+.cd-container { /* this class is used to give a max-width to the element it is applied to, and center it horizontally when it reaches that max-width */
+	width: 90%;
+	max-width: $L; // breakpoints inside partials > _layout.scss
+	margin: 0 auto;
+	@include clearfix;
+}
+
+.cd-img-replace {
+	/* replace text with background images */
+	display: inline-block;
+	overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
+}
+
+/* -------------------------------- 
+
+Main components 
+
+-------------------------------- */
+
+header {
+	height: 250px;
+	line-height: 250px;
+	background-color: $color-1;
+
+	h1 {
+		@include font-size(30px);
+		text-align: center;
+		color: $color-3;
+		font-weight: 300;
+	}
+}
+
+.cd-product {
+	text-align: center;
+}
+
+.cd-product-wrapper {
+	display: inline-block;
+	position: relative;
+	margin: 0 auto;
+	width: 100%;
+	max-width: 450px;
+
+	> img {
+		display: block;
+	}
+}
+
+.cd-single-point {
+	position: absolute;
+	border-radius: 50%;
+
+	> a {
+		position: relative;
+		z-index: 2;
+		display: block;
+		width: 30px;
+		height: 30px;
+		border-radius: inherit;
+		background: $color-4;
+		box-shadow: 0 0 10px rgba(#000, .3), inset 0 1px 0 rgba($color-5, .3);
+		@include transition(background-color .2s);
+		
+		&::after, &:before {
+			/* rotating plus icon */
+			content: '';
+			position: absolute;
+			@include center;
+			background-color: $color-5;
+			@include transition-property(transform);
+			@include transition-duration(.2s);
+		}
+
+		&::after {
+			height: 2px;
+			width: 12px;
+		}
+
+		&::before {
+			height: 12px;
+			width: 2px;
+		}
+	}
+	
+	&::after {
+		/* this is used to create the pulse animation */
+		content: '';
+		position: absolute;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		border-radius: inherit;
+		background-color: transparent;
+		@include animation(cd-pulse 2s infinite);
+	}
+
+	&:first-child { // set these positions of interest points according to your product image
+		bottom: 40%;
+		right: 30%;
+	}
+
+	&:nth-child(2) {
+		bottom: 24%;
+		right: 46%;
+	}
+
+	&:nth-child(3) {
+		top: 28%;
+		left: 20%;
+	}
+
+	&:nth-child(4) {
+		top: 20%;
+		right: 22%;
+	}
+
+	&.is-open {
+
+		> a {
+			background-color: $color-2;
+
+			&::after, &::before {
+				@include transform(translateX(-50%) translateY(-50%) rotate(135deg) );
+			}	
+		}
+
+		&::after {
+			/* remove pulse effect */
+			display: none;
+		}
+
+		.cd-more-info {
+			visibility: visible;
+			opacity: 1;
+			@include transform(scale(1));
+			@include transition(opacity .3s 0s, visibility 0s 0s, transform .3s 0s, top .3s 0s, bottom .3s 0s, left .3s 0s, right .3s 0s);
+		}
+	}
+
+	&.visited {
+
+		> a {
+			background-color: $color-2;	
+		}
+
+		&::after {
+			/* pulse effect no more active on visited elements */
+			display: none;
+		}
+	}
+
+	@include MQ(S) {
+
+		&.is-open .cd-more-info {
+			
+			&.cd-left { 
+				right: 140%;
+			}
+
+			&.cd-right { 
+				left: 140%;
+			}
+
+			&.cd-top {
+				bottom: 140%;
+			}
+
+			&.cd-bottom {
+				top: 140%;
+			}
+		}
+	}
+}
+
+@include keyframes(cd-pulse) {
+	0% {
+		@include transform(scale(1));
+		box-shadow: inset 0 0 1px 1px rgba($color-4, .8);
+	}
+
+	50% {
+		box-shadow: inset 0 0 1px 1px rgba($color-4, .8);
+	}
+
+	100% {
+		@include transform(scale(1.6));
+		box-shadow: inset 0 0 1px 1px rgba($color-4, 0);
+	}
+}
+
+.cd-single-point .cd-more-info {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto; 
+	-webkit-overflow-scrolling: touch;
+
+	text-align: left;
+	line-height: 1.5;
+
+	background-color: rgba($color-5, .95);
+	padding: 2em 1em 1em;
+
+	visibility: hidden;
+	opacity: 0;
+	@include transform(scale(.8));
+	@include transition(opacity .3s 0s, visibility 0s .3s, transform .3s 0s, top .3s 0s, bottom .3s 0s, left .3s 0s, right .3s 0s);
+	
+	&::before {
+		/* triangle next to the interest point description - hidden on mobile */
+		content: '';
+		position: absolute;
+		height: 0;
+		width: 0;
+		display: none;
+		border: 8px solid transparent;
+	}
+
+	h2 {
+		@include font-size(22px);
+		margin-bottom: .6em;
+	}
+
+	p {
+		color: lighten($color-1, 30%);
+	}
+
+	@include MQ(S) {
+		position: absolute;
+		width: 220px;
+		height: 240px;
+		padding: 1em;
+		overflow-y: visible;
+		line-height: 1.4;
+		@include border-radius;
+		box-shadow: 0 0 20px rgba(#000, .5);
+
+		&::before {
+			display: block;
+		}
+
+		&.cd-left, &.cd-right {
+			@include center(y);
+
+			&::before {
+				@include center(y);
+			}
+		} 
+
+		&.cd-left {
+			right: 160%;
+			left: auto;
+
+			&::before {
+				border-left-color: rgba($color-5, .95);
+				left: 100%;
+			}
+		}
+
+		&.cd-right {
+			left: 160%;
+
+			&::before {
+				border-right-color: rgba($color-5, .95);
+				right: 100%;
+			}
+		}
+
+		&.cd-top, &.cd-bottom {
+			@include center(x);
+
+			&::before {
+				@include center(x);
+			}
+		} 
+
+		&.cd-top {
+			bottom: 160%;
+			top: auto;
+
+			&::before {
+				border-top-color: rgba($color-5, .95);
+				top: 100%;
+			}
+		}
+
+		&.cd-bottom {
+			top: 160%;
+
+			&::before {
+				border-bottom-color: rgba($color-5, .95);
+				bottom: 100%;
+			}
+		}
+
+		h2 {
+			@include font-size(20px);
+			margin-bottom: 0;
+		}
+
+		p {
+			@include font-size(14px);
+		}
+	}
+}
+
+/* close the interest point description - only on mobile */
+
+.cd-close-info {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 44px;
+	width: 44px;
+
+	&::after, &:before {
+		content: '';
+		position: absolute;
+		left: 50%;
+	    top: 50%;
+	    bottom: auto;
+	    right: auto;
+		@include transform(translateX(-50%) translateY(-50%) rotate(45deg));
+		background-color: $color-2;
+		@include transition-property(transform);
+		@include transition-duration(.2s);
+	}
+
+	&::after {
+		height: 2px;
+		width: 16px;
+	}
+
+	&::before {
+		height: 16px;
+		width: 2px;
+	}
+
+	@include MQ(S) {
+		display: none;
+	}
+}
