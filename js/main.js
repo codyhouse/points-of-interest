@@ -5,7 +5,7 @@ jQuery(document).ready(function($){
 		if( selectedPoint.hasClass('is-open') ) {
 			selectedPoint.removeClass('is-open').addClass('visited');
 		} else {
-			selectedPoint.addClass('is-open').siblings('.cd-single-point').removeClass('is-open');
+			selectedPoint.addClass('is-open').siblings('.cd-single-point.is-open').removeClass('is-open').addClass('visited');
 		}
 	});
 	//close interest point description
